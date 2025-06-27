@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                Int            @id @default(autoincrement())
+  email             String         @unique
+  username          String         @unique
+  passwordHash      String
+  
+  isProfileComplete Boolean        @default(false)
+
+  aiProfileContext  String?
+
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  formHistories     FormHistory[]
+  refreshTokens     RefreshToken[]
+  profile           UserProfile?
+}
+
+model UserProfile {
+  id                            Int      @id @default(autoincrement())
+  userId                        Int      @unique
+  firstName                     String
+  lastName                      String
+  hobbies                       String?
+  dateOfBirth                   DateTime
+  phoneNumber                   String
+  phoneCountryCode              String
+  gender                        String
+  address                       String
+  city                          String
+  country                       String
+  postalCode                    String
+  linkedinUrl                   String?
+  githubUrl                     String?
+  portfolioUrl                  String?
+  academicDegree                String?
+  academicInstitution           String?
+  academicGraduationYear        Int?
+  academicFieldOfStudy          String?
+  professionalJobTitle          String?
+  professionalCompanyName       String?
+  professionalYearsOfExperience Int?
+  professionalSkills            String?
+  startupProjectName            String?
+  startupSummary                String?
+  startupMission                String?
+  startupProblemStatement       String?
+  startupSolution               String?
+  startupImpact                 String?
+  startupTeamMembers            String?
+  startupVideoUrl               String?
+  createdAt                     DateTime @default(now())
+  updatedAt                     DateTime @updatedAt
+  user                          User     @relation(fields: [userId], references: [id])
+}
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  userId    Int
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model FormHistory {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  formUrl    String
+  formTitle  String?
+  formFields Json
+  filledData Json
+  success    Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id])
+}
